@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* :root {
+  --background: #ffffff;
+  --foreground: #171717;
+} */
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #f9f9fa;
+    --foreground: #0a0a0a;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+  color: #545454;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@media (min-width: 0px) {
+  .productFont {
+    @apply text-sm;
+  }
+
+  .inputHd {
+    @apply hidden;
+  }
+
+  .productGrid {
+    @apply grid grid-cols-2 gap-3 px-3 w-full;
+  }
+
+  .prodPagePadding {
+    @apply px-3;
+  }
+
+  .cartPadding {
+    @apply px-3;
+  }
+
+  .sideBar {
+    @apply hidden;
+  }
+}
+
+@media (min-width: 426px) {
+  .inputBd {
+    @apply hidden;
+  }
+
+  .productFont {
+    @apply text-sm;
+  }
+
+  .inputHd {
+    @apply block w-[45vw];
+  }
+}
+
+@media (min-width: 580px) {
+  .productGrid {
+    @apply grid grid-cols-3 gap-4;
+  }
+
+  .prodPagePadding {
+    @apply px-7;
+  }
+
+  .cartPadding {
+    @apply px-7;
+  }
+}
+
+@media (min-width: 700px) {
+  .productGrid {
+    @apply grid grid-cols-3 px-8 gap-4;
+  }
+
+  .prodPagePadding {
+    @apply px-16;
+  }
+
+  .cartPadding {
+    @apply px-16;
+  }
+}
+
+@media (min-width: 769px) {
+  .sideBar {
+    @apply block;
+  }
+
+  .prodContainer {
+    @apply px-8 flex justify-between w-full;
+  }
+
+  .headerPadding {
+    @apply px-8;
+  }
+}
+
+@media (min-width: 1000px) {
+  .productGrid {
+    @apply grid-cols-4 px-8 gap-4;
+  }
+}

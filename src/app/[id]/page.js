@@ -13,26 +13,31 @@ import Locations from "./locations";
 import { useRouter } from "next/navigation";
 
 const Page = () => {
+  const [imgIndex, setImgIndex] = useState(0);
   const router = useRouter();
-  const { products, setCurrProduct, currProduct, setCart, cart, deviceWidth } =
-    useContext(DataContext);
+  const {
+    products,
+    setCurrProduct,
+    currProduct,
+    addCart,
+    deviceWidth,
+    selectStates,
+    setSelectState,
+    localGovt,
+    setLocalGovt,
+  } = useContext(DataContext);
   const { id } = useParams(); // Fetch the id from the URL
 
   useEffect(() => {
     if (products && id) {
       const foundProduct = products.find((item) => item._id === id);
       if (foundProduct) {
-        setCurrProduct(foundProduct);
+        setCurrProduct({ ...foundProduct, qty: 1 });
       } else {
         console.warn("Product not found!");
       }
     }
   }, [products, id]);
-
-  const addCart = () => {
-    setCart((prev) => [...prev, currProduct]);
-    localStorage.setItem("cartProd", JSON.stringify(cart));
-  };
 
   return (
     <>
@@ -43,7 +48,7 @@ const Page = () => {
               <div className="lg:mr-7">
                 <div className="w-full lg:w-80 h-80 relative bg-neutral-100 py-2 p-2">
                   <Image
-                    src={currProduct.img[0]}
+                    src={currProduct.img[imgIndex]}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     style={{ objectFit: "contain" }}
@@ -52,8 +57,14 @@ const Page = () => {
                 </div>
                 <div className="flex my-3 lg:w-80">
                   {currProduct.img.length > 1 &&
-                    currProduct.img.map((image) => (
-                      <div className="w-20 h-20 relative mx-2 border rounded-md">
+                    currProduct.img.map((image, index) => (
+                      <div
+                        key={index}
+                        onClick={() => setImgIndex(index)}
+                        className={`w-20 h-20 relative mx-2 border rounded-md cursor-pointer ${
+                          index === imgIndex && "border-2 border-blue-500"
+                        }`}
+                      >
                         <Image
                           src={image}
                           alt={currProduct.name}
@@ -69,9 +80,17 @@ const Page = () => {
                 name={currProduct.name}
                 price={currProduct.price}
                 addCart={addCart}
+                qty={currProduct.qty}
+                setCurrProduct={setCurrProduct}
+                deviceWidth={deviceWidth}
               />
             </div>
-            <Locations />
+            <Locations
+              selectStates={selectStates}
+              setSelectState={setSelectState}
+              localGovt={localGovt}
+              setLocalGovt={setLocalGovt}
+            />
           </div>
           <Description description={currProduct.description} />
           <Features description={currProduct.description} />

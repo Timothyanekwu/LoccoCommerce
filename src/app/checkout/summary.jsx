@@ -3,8 +3,10 @@
 import React from "react";
 import DataContext from "@/context/context";
 import { useContext } from "react";
+import { useRouter } from "next/navigation";
 
 const Summary = () => {
+  const router = useRouter();
   const { cart, deviceWidth } = useContext(DataContext);
 
   const total = cart.reduce((prev, curr) => prev + curr.price, 0);
@@ -12,7 +14,10 @@ const Summary = () => {
     <div className="pt-5 lg:pt-0 lg:flex-grow">
       <div className="border-b flex justify-between items-center h-14 px-3">
         <p className="font-semibold lg:text-sm">ORDER SUMMARY</p>
-        <p className="underline underline-offset-4 text-[#4D4875] mr-7 lg:text-xs">
+        <p
+          onClick={() => router.push("/cart")}
+          className="underline underline-offset-4 text-[#4D4875] mr-7 lg:text-xs cursor-pointer"
+        >
           Modify Cart
         </p>
       </div>

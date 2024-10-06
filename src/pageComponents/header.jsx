@@ -5,12 +5,14 @@ import { TiShoppingCart } from "react-icons/ti";
 import { FiSearch } from "react-icons/fi";
 import { useContext } from "react";
 import DataContext from "@/context/context";
+import { useRouter } from "next/navigation";
 // import CategoryNav from "./categories";
 
 const Head = () => {
-  const { search, handleSearch, setSearch } = useContext(DataContext);
+  const { search, handleSearch, setSearch, cart } = useContext(DataContext);
+  const router = useRouter();
   return (
-    <div className="bg-white w-full shadow-md pb-2 sticky top-0 z-10 headerPadding">
+    <div className="bg-white w-full shadow-md pb-2 sticky top-0 z-20 headerPadding">
       <div className="px-3 pt-4">
         <div className="flex w-full justify-between items-center mb-2">
           <div className="flex items-center">
@@ -36,9 +38,20 @@ const Head = () => {
             <span className="mx-3">
               <p className="text-sm">Sign in</p>
             </span>
-            <span className="flex items-center">
+            <span
+              onClick={() => router.push("/cart")}
+              className="flex items-center cursor-pointer"
+            >
               <p className="text-sm">Cart</p>
-              <TiShoppingCart className="ml-1 h-6 w-6" />
+              <div className="relative ml-1">
+                {cart.length > 0 && (
+                  <div className="text-[9px] font-bold flex items-center justify-center rounded-full bg-green-500 text-white h-3 w-3 absolute top-[-4px] right-[-2px]">
+                    {cart.length}
+                  </div>
+                )}
+
+                <TiShoppingCart className="h-6 w-6" />
+              </div>
             </span>
           </div>
         </div>

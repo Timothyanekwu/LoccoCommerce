@@ -1,12 +1,10 @@
 import { CiStar } from "react-icons/ci";
 import { IoShareSocial } from "react-icons/io5";
 import { FaHeart } from "react-icons/fa6";
-import { useContext } from "react";
-import DataContext from "@/context/context";
+
 import React from "react";
 
-const Info = ({ name, price, addCart }) => {
-  const { deviceWidth } = useContext(DataContext);
+const Info = ({ name, price, addCart, deviceWidth, qty, setCurrProduct }) => {
   return (
     <div className="flex flex-col lg:justify-between">
       <div>
@@ -29,14 +27,29 @@ const Info = ({ name, price, addCart }) => {
           <div className="flex items-center">
             <p>Quantity: </p>
             <div className="flex my-4 ml-2">
-              <div className="w-10 h-8 flex items-center justify-center border">
-                +
-              </div>
-              <div className="w-10 h-8 flex items-center justify-center border">
-                1
-              </div>
-              <div className="w-10 h-8 flex items-center justify-center border">
+              <div
+                onClick={() =>
+                  setCurrProduct((prev) =>
+                    prev.qty > 1 ? { ...prev, qty: prev.qty - 1 } : prev
+                  )
+                }
+                className="w-10 h-8 flex items-center justify-center border cursor-pointer hover:bg-neutral-100"
+              >
                 -
+              </div>
+              <div className="w-10 h-8 flex items-center justify-center border">
+                {qty}
+              </div>
+              <div
+                onClick={() =>
+                  setCurrProduct((prev) => ({
+                    ...prev,
+                    qty: prev.qty + 1,
+                  }))
+                }
+                className="w-10 h-8 flex items-center justify-center border cursor-pointer hover:bg-neutral-100"
+              >
+                +
               </div>
             </div>
           </div>

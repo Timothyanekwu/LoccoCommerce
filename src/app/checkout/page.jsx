@@ -8,6 +8,7 @@ import NewLocationModal from "./newLocationModal";
 import { useContext } from "react";
 import { useRouter } from "next/navigation";
 import DataContext from "@/context/context";
+import Payment from "./payment";
 
 const Page = () => {
   const router = useRouter();
@@ -24,11 +25,21 @@ const Page = () => {
     setAddNote,
     payType,
     setPayType,
+    locationId,
+    setLocationId,
+    placeOrder,
   } = useContext(DataContext);
   return (
-    <div className="pt-5 lg:flex lg:px-[7vw]">
+    <div className="pt-5 lg:flex lg:flex-row-reverse md:px-5 lg:px-[7vw]">
+      <Summary router={router} />
+
       <div className="lg:w-[70%] lg:mr-5">
-        <Location setLocatView={setLocatView} locations={locations} />
+        <Location
+          setLocatView={setLocatView}
+          locations={locations}
+          locationId={locationId}
+          setLocationId={setLocationId}
+        />
         <div className="w-full px-3 border-b">
           <div className="flex items-center my-3">
             <input
@@ -50,12 +61,14 @@ const Page = () => {
         </div>
 
         <PayOptions payType={payType} setPayType={setPayType} />
-      </div>
-      <Summary router={router} />
-
-      <div className="w-full p-4 bg-white my-6 lg:hidden">
-        <div className="w-full h-12 rounded-md bg-[#4D4875] flex items-center justify-center">
-          <p className="text-white">Proceed to Payment</p>
+        {payType === "Pay now" && <Payment />}
+        <div className="w-full p-4 bg-white my-6">
+          <button
+            onClick={placeOrder}
+            className="w-full h-12 rounded-md bg-[#4D4875] flex items-center justify-center"
+          >
+            <p className="text-white">Place Order</p>
+          </button>
         </div>
       </div>
 

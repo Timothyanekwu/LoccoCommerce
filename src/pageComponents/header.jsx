@@ -7,10 +7,29 @@ import { useContext } from "react";
 import DataContext from "@/context/context";
 import { useRouter } from "next/navigation";
 // import CategoryNav from "./categories";
+import { VscAccount } from "react-icons/vsc";
+import { MdOutlineArrowDropDown } from "react-icons/md";
+import { GrShop } from "react-icons/gr";
+import { FaHeart } from "react-icons/fa";
 
 const Head = () => {
-  const { search, handleSearch, setSearch, cart } = useContext(DataContext);
+  const { search, handleSearch, setSearch, cart, accView, setAccView } =
+    useContext(DataContext);
   const router = useRouter();
+  const options = [
+    {
+      icon: <GrShop />,
+      name: "Orders",
+    },
+    {
+      icon: <FaHeart />,
+      name: "Liked products",
+    },
+  ];
+
+  const toOrders = () => {
+    router.push("/orders");
+  };
   return (
     <div className="bg-white w-full shadow-md pb-2 sticky top-0 z-20 headerPadding">
       <div className="px-3 pt-4">
@@ -34,15 +53,44 @@ const Head = () => {
             </div>
           </div>
 
-          <div className="flex items-center">
-            <span className="mx-3">
-              <p className="text-sm">Sign in</p>
+          <div className="flex items-center h-full">
+            <span className="mx-3 h-full relative">
+              <div
+                onClick={() => setAccView((prev) => !prev)}
+                className="flex h-full items-center cursor-pointer group"
+              >
+                <VscAccount className="text-xl group-hover:fill-[#4D4875]" />
+                <p className="text-sm ml-2 lg:text-base group-hover:text-[#4D4875]">
+                  Hi Timothy!
+                </p>
+                <MdOutlineArrowDropDown className="text-xl group-hover:fill-[#4D4875]" />
+              </div>
+
+              {accView && (
+                <div className="absolute top-12 shadow-lg left-0 bg-white w-44 border">
+                  {options.map((item) => {
+                    return (
+                      <span
+                        onClick={() => item.name === "Orders" && toOrders()}
+                        className="flex py-2 items-center cursor-pointer hover:bg-neutral-100 px-3"
+                      >
+                        <div>{item.icon}</div>
+
+                        <p className="ml-3">{item.name}</p>
+                      </span>
+                    );
+                  })}
+                  <div className="w-full py-2 flex items-center justify-center border-t px-3 hover:bg-neutral-100 cursor-pointer">
+                    <p className="text-[#4D4875]">LOGOUT</p>
+                  </div>
+                </div>
+              )}
             </span>
             <span
               onClick={() => router.push("/cart")}
               className="flex items-center cursor-pointer"
             >
-              <p className="text-sm">Cart</p>
+              <p className="text-sm lg:text-base">Cart</p>
               <div className="relative ml-1">
                 {cart.length > 0 && (
                   <div className="text-[9px] font-bold flex items-center justify-center rounded-full bg-green-500 text-white h-3 w-3 absolute top-[-4px] right-[-2px]">
@@ -65,7 +113,6 @@ const Head = () => {
           </div>
         </div>
       </div>
-      {/* <CategoryNav /> */}
     </div>
   );
 };

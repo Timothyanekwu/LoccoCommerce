@@ -3,17 +3,13 @@ import Flutterwave from "../../../public/flutterWave";
 
 const Payment = () => {
   return (
-    <div>
-      <div className="w-full h-20 flex justify-between items-end pb-3 px-5">
-        <p>hj234jk34j4jyifg</p>
-
-        <p className="text-lg font-semibold">N 95000</p>
-      </div>
-      <div className="w-full py-2 bg-black flex items-center justify-center">
-        <p className="text-white">SELECT PAYMENT METHOD</p>
+    <div className="mt-9 px-3">
+      <div className="border-b flex justify-between items-center h-14 px-3">
+        <p className="font-semibold">MAKE PAYMENT</p>
       </div>
 
-      <div className="w-full px-8 lg:px-72 mt-10">
+      <div className="w-full px-3 mt-10">
+        <p className="text-base mb-3">Total amount: N 95000</p>
         <div className="w-full h-32 rounded-xl bg-[#090053] p-4 flex flex-col justify-between shadow-xl">
           <Flutterwave width={150} />
           <p className="text-white text-xs">
@@ -21,8 +17,8 @@ const Payment = () => {
           </p>
         </div>
 
-        <div className="w-full h-fit rounded-xl border-2 border-[#4D4875] text-[#4D4875] mt-5 p-4">
-          <p className="text-xl font-semibold">Make Transfer Now</p>
+        <div className="w-full h-fit rounded-xl border border-[#4D4875] text-[#4D4875] mt-5 p-4">
+          <p className="text-xl">Make Transfer Now</p>
           <p className="text-xs">Make sure to submit proof of payment.</p>
 
           <div className="font-semibold mt-4">
@@ -48,10 +44,6 @@ const Payment = () => {
               </label>
             </div>
           </div>
-        </div>
-
-        <div className="w-full flex items-center justify-center h-14 rounded-lg bg-[#4D4875] my-4 text-white">
-          <p>Place Order</p>
         </div>
       </div>
     </div>

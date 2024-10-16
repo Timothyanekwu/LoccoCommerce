@@ -36,11 +36,6 @@ const Summary = () => {
           <p className="text-base font-semibold">N {total + 1500}</p>
         </div>
       </div>
-      {deviceWidth >= 1024 && (
-        <div className="rounded-md bg-[#4D4875] flex lg:mx-3 h-10 justify-center py-2 px-3 items-center mt-4">
-          <p className="text-xs text-white">CHECKOUT</p>
-        </div>
-      )}
     </div>
   );
 };

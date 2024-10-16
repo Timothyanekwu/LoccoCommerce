@@ -7,23 +7,36 @@ import axios from "axios";
 const DataContext = createContext();
 
 export const Data = ({ children }) => {
+  // ----------------------- STATE MANAGEMENT -----------------------------
+  // containers
   const [cart, setCart] = useState([]);
-  const [search, setSearch] = useState("");
   const [products, setProducts] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [orders, setOrders] = useState([]);
+
+  // toggle views
+  const [sortView, setSortView] = useState(false);
+  const [noteView, setAddView] = useState(false);
+  const [locatView, setLocatView] = useState(false);
+  const [accView, setAccView] = useState(false);
+
+  // marketplace states
+  const [search, setSearch] = useState("");
   const [currProduct, setCurrProduct] = useState(null);
   const [selectedOption, setSelectedOption] = useState("");
   const [discOption, setDiscOption] = useState("");
-  const [sortView, setSortView] = useState(false);
-  // const [qty, setQty] = useState(1);
   const [selectStates, setSelectState] = useState("");
+
+  // order states
+  const [currOrder, setCurrOrder] = useState({});
+
+  //product page states
   const [localGovt, setLocalGovt] = useState("");
-  const [noteView, setAddView] = useState(false);
+
+  // checkout states
   const [addNote, setAddNote] = useState("");
   const [payType, setPayType] = useState("");
-  const [deviceWidth, setDeviceWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 1024
-  );
-  // checkout
+  const [locationId, setLocationId] = useState(null);
   const [locat, setLocat] = useState({
     name: "",
     surname: "",
@@ -32,13 +45,18 @@ export const Data = ({ children }) => {
     addPhone: "",
     info: "",
   });
-  const [locations, setLocations] = useState([]);
-  const [locatView, setLocatView] = useState(false);
 
+  //other states
+  const [deviceWidth, setDeviceWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1024
+  );
+
+  // ------------------------- GLOBAL CONSTANTS -----------------------------
   const callTimeout = useRef(null);
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  // ------------------------- USE-EFFECT HOOK ------------------------------
   useEffect(() => {
     const handleResize = () => {
       setDeviceWidth(window.innerWidth);
@@ -82,14 +100,36 @@ export const Data = ({ children }) => {
     getData();
   }, []);
 
-  // ------------- FUNCTIONS -------------
+  //fetch locations from the database
+  useEffect(() => {
+    const locationFetch = async () => {
+      const res = await axios.get("http://localhost:5500/products/locations");
+      setLocations(res.data);
+    };
 
+    locationFetch();
+  }, []);
+
+  // orders fetch from database
+  useEffect(() => {
+    const ordersFetch = async () => {
+      const res = await axios.get("http://localhost:5500/products/orders");
+      setOrders(res.data);
+    };
+    ordersFetch();
+    console.log(orders);
+  }, []);
+
+  // --------------------- FUNCTIONS AND HANDLERS ----------------------
+
+  //categories filter handler
   const handleCat = (item) => {
     const setParams = new URLSearchParams(searchParams.toString());
     setParams.set("category", item.toLowerCase());
     router.push(`/?${setParams.toString()}`, undefined, { shallow: true });
   };
 
+  // price filter handler
   const handlePrice = (msg, value) => {
     const setParams = new URLSearchParams(searchParams.toString());
     setParams.set("priceRange", value);
@@ -97,6 +137,7 @@ export const Data = ({ children }) => {
     setSelectedOption(msg);
   };
 
+  // discounts filter handler
   const handleDisc = (item) => {
     const setParams = new URLSearchParams(searchParams.toString());
     setParams.set("discount", item.toString());
@@ -114,6 +155,7 @@ export const Data = ({ children }) => {
     setSelectedOption(false);
   };
 
+  // product search handler
   const handleSearch = (e) => {
     e.preventDefault();
     if (!search) return;
@@ -124,6 +166,7 @@ export const Data = ({ children }) => {
     });
   };
 
+  // product sort handler
   const handleSort = (opt) => {
     const setParams = new URLSearchParams(searchParams.toString());
     setParams.set("sortBy", opt);
@@ -134,6 +177,7 @@ export const Data = ({ children }) => {
     setSortView(false);
   };
 
+  // product add to cart
   const addCart = async () => {
     const item = cart.find((item) => item.name === currProduct.name);
 
@@ -240,12 +284,14 @@ export const Data = ({ children }) => {
     }
   };
 
+  // delete from cart
   const cartDelete = async (id) => {
     await axios.delete(`http://localhost:5500/products/cartData/${id}`);
 
     setCart((prev) => prev.filter((item) => item._id !== id));
   };
 
+  // add customer location
   const addLocation = (e) => {
     switch (e.target.id) {
       case "name":
@@ -277,6 +323,7 @@ export const Data = ({ children }) => {
     }
   };
 
+  // customer location submit
   const locationSubmit = async () => {
     await axios.post("http://localhost:5500/products/locations", {
       name: locat.name,
@@ -288,6 +335,7 @@ export const Data = ({ children }) => {
     });
 
     setLocations((prev) => [...prev, locat]);
+
     setLocat({
       name: "",
       surname: "",
@@ -298,6 +346,25 @@ export const Data = ({ children }) => {
     });
 
     setLocatView(false);
+  };
+
+  const placeOrder = async () => {
+    const location = locations.find((location) => location._id === locationId);
+
+    const res = await axios.post("http://localhost:5500/products/orders", {
+      customerFullName: `${location.name} ${location.surname}`,
+      customerPhone: location.phoneNo,
+      customerAddress: location.fullAddress,
+      orderNumber: Math.round(Math.random() * 10000000000), // You might want a more reliable ID
+      products: [...cart],
+      payMethod: payType,
+      totalPrice: cart.reduce((prev, curr) => prev + curr.price, 0),
+    });
+
+    setOrders((prev) => [...prev, res.data]);
+    setCart([]);
+
+    router.push("/");
   };
 
   return (
@@ -321,8 +388,6 @@ export const Data = ({ children }) => {
         sortView,
         setSortView,
         handleSort,
-        // qty,
-        // setQty,
         addCart,
         selectStates,
         setSelectState,
@@ -343,6 +408,14 @@ export const Data = ({ children }) => {
         setAddNote,
         payType,
         setPayType,
+        locationId,
+        setLocationId,
+        placeOrder,
+        orders,
+        accView,
+        setAccView,
+        currOrder,
+        setCurrOrder,
       }}
     >
       {children}

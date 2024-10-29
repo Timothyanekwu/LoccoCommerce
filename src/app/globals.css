@@ -21,6 +21,17 @@ body {
   color: #545454;
 }
 
+@font-face {
+  font-family: "Jaro";
+  src: url("/fonts/Jaro-Regular-VariableFont_opsz.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+.jaro {
+  font-family: "Jaro", sans-serif;
+}
+
 .scrollbar-hide {
   scrollbar-width: none;
 }

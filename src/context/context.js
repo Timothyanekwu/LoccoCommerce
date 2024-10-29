@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useEffect, useState, useRef } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useAuthContext } from "@/hooks/useAuthContext";
 import axios from "axios";
 
 const DataContext = createContext();
@@ -26,6 +27,7 @@ export const Data = ({ children }) => {
   const [selectedOption, setSelectedOption] = useState("");
   const [discOption, setDiscOption] = useState("");
   const [selectStates, setSelectState] = useState("");
+  const [profile, setProfile] = useState(null);
 
   // order states
   const [currOrder, setCurrOrder] = useState({});
@@ -55,8 +57,21 @@ export const Data = ({ children }) => {
   const callTimeout = useRef(null);
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { user } = useAuthContext();
+  const pathname = usePathname();
 
   // ------------------------- USE-EFFECT HOOK ------------------------------
+
+  useEffect(() => {
+    const localUser = localStorage.getItem("user");
+    if (!pathname.includes("auth") && !localUser) {
+      router.push("/auth/signup");
+    }
+    if (pathname.includes("auth") && localUser) {
+      router.push("/");
+    }
+  }, []);
+
   useEffect(() => {
     const handleResize = () => {
       setDeviceWidth(window.innerWidth);
@@ -68,61 +83,63 @@ export const Data = ({ children }) => {
     };
   }, []);
 
-  // fetch products from the database
   useEffect(() => {
-    const getData = async () => {
+    const fetchData = async () => {
       try {
-        const result = await axios.get(
-          `http://localhost:5500/products?${searchParams.toString()}`
-        );
-        setProducts(result.data);
+        if (user) {
+          const [
+            productsResponse,
+            cartResponse,
+            locationsResponse,
+            ordersResponse,
+            profileResponse,
+          ] = await Promise.all([
+            axios.get(
+              `http://localhost:5500/products?${searchParams.toString()}`,
+              {
+                headers: { Authorization: `Bearer ${user.token}` },
+              }
+            ),
+            axios.get(`http://localhost:5500/products/cartData`, {
+              headers: { Authorization: `Bearer ${user.token}` },
+            }),
+            axios.get(`http://localhost:5500/products/locations`, {
+              headers: { Authorization: `Bearer ${user.token}` },
+            }),
+            axios.get(`http://localhost:5500/products/orders`, {
+              headers: { Authorization: `Bearer ${user.token}` },
+            }),
+            axios.get(`http://localhost:5500/products/profile`, {
+              headers: { Authorization: `Bearer ${user.token}` },
+            }),
+          ]);
+
+          // console.log("Profile response data:", profileResponse.data);
+
+          setProducts(productsResponse.data);
+          setCart(cartResponse.data);
+          setLocations(locationsResponse.data);
+          setOrders(ordersResponse.data);
+          setProfile(profileResponse.data);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
+
+        setProducts([]);
+        setCart([]);
+        setLocations([]);
+        setOrders([]);
+        setProfile(null);
       }
     };
 
-    getData();
-  }, [searchParams]);
-
-  // fetch cart products from the database
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const result = await axios.get(
-          "http://localhost:5500/products/cartData"
-        );
-        setCart(result.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    getData();
-  }, []);
-
-  //fetch locations from the database
-  useEffect(() => {
-    const locationFetch = async () => {
-      const res = await axios.get("http://localhost:5500/products/locations");
-      setLocations(res.data);
-    };
-
-    locationFetch();
-  }, []);
-
-  // orders fetch from database
-  useEffect(() => {
-    const ordersFetch = async () => {
-      const res = await axios.get("http://localhost:5500/products/orders");
-      setOrders(res.data);
-    };
-    ordersFetch();
-    console.log(orders);
-  }, []);
+    fetchData();
+  }, [user, searchParams]);
 
   // --------------------- FUNCTIONS AND HANDLERS ----------------------
 
   //categories filter handler
+
   const handleCat = (item) => {
     const setParams = new URLSearchParams(searchParams.toString());
     setParams.set("category", item.toLowerCase());
@@ -189,6 +206,11 @@ export const Data = ({ children }) => {
           img: currProduct.img[0],
           qty: currProduct.qty,
           price: currProduct.price * currProduct.qty,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
         }
       );
 
@@ -202,6 +224,11 @@ export const Data = ({ children }) => {
         {
           price: currProduct.price * (item.qty + currProduct.qty),
           qty: item.qty + currProduct.qty,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
         }
       );
 
@@ -286,7 +313,11 @@ export const Data = ({ children }) => {
 
   // delete from cart
   const cartDelete = async (id) => {
-    await axios.delete(`http://localhost:5500/products/cartData/${id}`);
+    await axios.delete(`http://localhost:5500/products/cartData/${id}`, {
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
+    });
 
     setCart((prev) => prev.filter((item) => item._id !== id));
   };
@@ -325,14 +356,22 @@ export const Data = ({ children }) => {
 
   // customer location submit
   const locationSubmit = async () => {
-    await axios.post("http://localhost:5500/products/locations", {
-      name: locat.name,
-      surname: locat.surname,
-      fullAddress: locat.address,
-      additionalInfo: locat.info,
-      phoneNo: locat.phone,
-      additionalPhone: locat.addPhone,
-    });
+    await axios.post(
+      "http://localhost:5500/products/locations",
+      {
+        name: locat.name,
+        surname: locat.surname,
+        fullAddress: locat.address,
+        additionalInfo: locat.info,
+        phoneNo: locat.phone,
+        additionalPhone: locat.addPhone,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+    );
 
     setLocations((prev) => [...prev, locat]);
 
@@ -351,15 +390,23 @@ export const Data = ({ children }) => {
   const placeOrder = async () => {
     const location = locations.find((location) => location._id === locationId);
 
-    const res = await axios.post("http://localhost:5500/products/orders", {
-      customerFullName: `${location.name} ${location.surname}`,
-      customerPhone: location.phoneNo,
-      customerAddress: location.fullAddress,
-      orderNumber: Math.round(Math.random() * 10000000000), // You might want a more reliable ID
-      products: [...cart],
-      payMethod: payType,
-      totalPrice: cart.reduce((prev, curr) => prev + curr.price, 0),
-    });
+    const res = await axios.post(
+      "http://localhost:5500/products/orders",
+      {
+        customerFullName: `${location.name} ${location.surname}`,
+        customerPhone: location.phoneNo,
+        customerAddress: location.fullAddress,
+        orderNumber: Math.round(Math.random() * 10000000000), // You might want a more reliable ID
+        products: [...cart],
+        payMethod: payType,
+        totalPrice: cart.reduce((prev, curr) => prev + curr.price, 0),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+    );
 
     setOrders((prev) => [...prev, res.data]);
     setCart([]);
@@ -416,6 +463,8 @@ export const Data = ({ children }) => {
         setAccView,
         currOrder,
         setCurrOrder,
+        setOrders,
+        profile,
       }}
     >
       {children}

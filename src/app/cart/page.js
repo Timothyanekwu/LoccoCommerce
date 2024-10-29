@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-import { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import DataContext from "@/context/context";
 import CartProduct from "./product";
 import { FaLongArrowAltLeft } from "react-icons/fa";
@@ -10,6 +9,33 @@ import { useRouter } from "next/navigation";
 const Page = () => {
   const { cart, deviceWidth, cartUpdate, cartDelete } = useContext(DataContext);
   const router = useRouter();
+  const [loading, setLoading] = useState(true); // Initialize loading state
+
+  useEffect(() => {
+    const fetchCartData = async () => {
+      try {
+        setLoading(true);
+        const handleResize = () => {
+          setDeviceWidth(window.innerWidth);
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => {
+          window.removeEventListener("resize", handleResize);
+        };
+      } catch (error) {
+        console.error("Failed to fetch cart data:", error);
+      } finally {
+        setLoading(false); // Set loading to false after fetching
+      }
+    };
+
+    fetchCartData();
+  }, []); // Run only once on component mount
+
+  if (loading) {
+    return <p>Loading...</p>; // Show a loading state while data is being fetched
+  }
 
   return (
     <div className="cartPadding pt-3">
@@ -30,16 +56,14 @@ const Page = () => {
           </div>
           <div className="lg:w-full lg:border rounded-xl lg:border-[#4D4875] lg:p-4">
             <p className="lg:block hidden">CART SUMMARY</p>
-            {cart.length >= 1 && (
+            {cart.length > 0 && (
               <div className="lg:flex lg:justify-between lg:items-center lg:w-full lg:my-2">
                 <p className="text-sm">Sub Total ({cart.length} items)</p>
-
                 <p className="text-sm font-semibold lg:text-lg">
-                  {cart.reduce((prev, curr) => prev + curr.price, 0)}
+                  {cart.reduce((prev, curr) => prev + curr.price, 0).toFixed(2)}
                 </p>
               </div>
             )}
-
             <p className="text-xs text-neutral-500">
               Delivery fees not included yet
             </p>
@@ -69,20 +93,18 @@ const Page = () => {
               <p className="text-xs text-white">Continue shopping</p>
             </div>
           )}
-          {cart.map((item) => {
-            return (
-              <CartProduct
-                key={item._id}
-                cartUpdate={cartUpdate}
-                name={item.name}
-                price={item.price}
-                img={item.img}
-                qty={item.qty}
-                id={item._id}
-                cartDelete={cartDelete}
-              />
-            );
-          })}
+          {cart.map((item) => (
+            <CartProduct
+              key={item._id}
+              cartUpdate={cartUpdate}
+              name={item.name}
+              price={item.price}
+              img={item.img}
+              qty={item.qty}
+              id={item._id}
+              cartDelete={cartDelete}
+            />
+          ))}
         </div>
       </div>
 

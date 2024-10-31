@@ -4,6 +4,7 @@ import { createContext, useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useAuthContext } from "@/hooks/useAuthContext";
 import axios from "axios";
+import pageGutter from "./pagination";
 
 const DataContext = createContext();
 
@@ -28,6 +29,7 @@ export const Data = ({ children }) => {
   const [discOption, setDiscOption] = useState("");
   const [selectStates, setSelectState] = useState("");
   const [profile, setProfile] = useState(null);
+  const [pages, setPages] = useState([]);
 
   // order states
   const [currOrder, setCurrOrder] = useState({});
@@ -52,6 +54,7 @@ export const Data = ({ children }) => {
   const [deviceWidth, setDeviceWidth] = useState(
     typeof window !== "undefined" ? window.innerWidth : 1024
   );
+  const [totalProducts, setTotalProducts] = useState(1);
 
   // ------------------------- GLOBAL CONSTANTS -----------------------------
   const callTimeout = useRef(null);
@@ -68,7 +71,7 @@ export const Data = ({ children }) => {
       router.push("/auth/signup");
     }
     if (pathname.includes("auth") && localUser) {
-      router.push("/");
+      router.push("/marketplace");
     }
   }, []);
 
@@ -114,13 +117,14 @@ export const Data = ({ children }) => {
             }),
           ]);
 
-          // console.log("Profile response data:", profileResponse.data);
-
-          setProducts(productsResponse.data);
+          setProducts(productsResponse.data.final); // final result of all filter queries
+          setTotalProducts(productsResponse.data.total); // total number of products from the result
           setCart(cartResponse.data);
           setLocations(locationsResponse.data);
           setOrders(ordersResponse.data);
           setProfile(profileResponse.data);
+
+          setPages(pageGutter(productsResponse.data.totalPages, 1));
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -143,14 +147,20 @@ export const Data = ({ children }) => {
   const handleCat = (item) => {
     const setParams = new URLSearchParams(searchParams.toString());
     setParams.set("category", item.toLowerCase());
-    router.push(`/?${setParams.toString()}`, undefined, { shallow: true });
+    setParams.delete("page");
+    router.push(`/marketplace?${setParams.toString()}`, undefined, {
+      shallow: true,
+    });
   };
 
   // price filter handler
   const handlePrice = (msg, value) => {
     const setParams = new URLSearchParams(searchParams.toString());
     setParams.set("priceRange", value);
-    router.push(`/?${setParams.toString()}`, undefined, { shallow: true });
+    setParams.delete("page");
+    router.push(`/marketplace?${setParams.toString()}`, undefined, {
+      shallow: true,
+    });
     setSelectedOption(msg);
   };
 
@@ -158,14 +168,18 @@ export const Data = ({ children }) => {
   const handleDisc = (item) => {
     const setParams = new URLSearchParams(searchParams.toString());
     setParams.set("discount", item.toString());
-    router.push(`/?${setParams.toString()}`, undefined, { shallow: true });
+    setParams.delete("page");
+    router.push(`/marketplace?${setParams.toString()}`, undefined, {
+      shallow: true,
+    });
     setDiscOption(item);
   };
 
   const clearFilter = () => {
     const setParams = new URLSearchParams(searchParams.toString());
     setParams.delete("priceRange");
-    router.push(`/?${setParams.toString()}`, undefined, {
+    setParams.delete("page");
+    router.push(`/marketplace?${setParams.toString()}`, undefined, {
       shallow: true,
     });
 
@@ -178,7 +192,8 @@ export const Data = ({ children }) => {
     if (!search) return;
     const setParams = new URLSearchParams(searchParams.toString());
     setParams.set("query", search);
-    router.push(`/?${setParams.toString()}`, undefined, {
+    setParams.delete("page");
+    router.push(`/marketplace?${setParams.toString()}`, undefined, {
       shallow: true,
     });
   };
@@ -187,7 +202,8 @@ export const Data = ({ children }) => {
   const handleSort = (opt) => {
     const setParams = new URLSearchParams(searchParams.toString());
     setParams.set("sortBy", opt);
-    router.push(`/?${setParams.toString()}`, undefined, {
+    setParams.delete("page");
+    router.push(`/marketplace?${setParams.toString()}`, undefined, {
       shallow: true,
     });
 
@@ -257,10 +273,14 @@ export const Data = ({ children }) => {
       // Set a new timeout
       callTimeout.current = setTimeout(async () => {
         try {
-          await axios.patch(`http://localhost:5500/products/cartData/${id}`, {
-            qty: qty,
-            price: price,
-          });
+          await axios.patch(
+            `http://localhost:5500/products/cartData/${id}`,
+            {
+              qty: qty,
+              price: price,
+            },
+            { Authorization: `Bearer ${user.token}` }
+          );
           console.log("Patch request made");
         } catch (error) {
           console.error("Error updating cart data:", error);
@@ -356,7 +376,7 @@ export const Data = ({ children }) => {
 
   // customer location submit
   const locationSubmit = async () => {
-    await axios.post(
+    const response = await axios.post(
       "http://localhost:5500/products/locations",
       {
         name: locat.name,
@@ -373,7 +393,8 @@ export const Data = ({ children }) => {
       }
     );
 
-    setLocations((prev) => [...prev, locat]);
+    const result = response.data;
+    setLocations((prev) => [...prev, result]);
 
     setLocat({
       name: "",
@@ -396,7 +417,7 @@ export const Data = ({ children }) => {
         customerFullName: `${location.name} ${location.surname}`,
         customerPhone: location.phoneNo,
         customerAddress: location.fullAddress,
-        orderNumber: Math.round(Math.random() * 10000000000), // You might want a more reliable ID
+        orderNumber: Math.round(Math.random() * 10000000000), // still change this later
         products: [...cart],
         payMethod: payType,
         totalPrice: cart.reduce((prev, curr) => prev + curr.price, 0),
@@ -408,10 +429,24 @@ export const Data = ({ children }) => {
       }
     );
 
+    await axios.delete(`http://localhost:5500/products/clearCart`, {
+      headers: { Authorization: `Bearer ${user.token}` },
+    });
+
+    alert("Order placed successfully!!!");
+
     setOrders((prev) => [...prev, res.data]);
     setCart([]);
 
-    router.push("/");
+    router.push("/marketplace");
+  };
+
+  const handlePage = (page) => {
+    const setParams = new URLSearchParams(searchParams.toString());
+    setParams.set("page", page);
+    router.push(`/marketplace?${setParams.toString()}`, undefined, {
+      shallow: true,
+    });
   };
 
   return (
@@ -465,6 +500,9 @@ export const Data = ({ children }) => {
         setCurrOrder,
         setOrders,
         profile,
+        pages,
+        setPages,
+        handlePage,
       }}
     >
       {children}

@@ -18,7 +18,7 @@ const LoginForm = () => {
     const success = await login(email, password);
 
     if (success) {
-      router.push("/");
+      router.push("/marketplace");
     }
   };
 

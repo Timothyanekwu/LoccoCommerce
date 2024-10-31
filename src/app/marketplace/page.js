@@ -4,9 +4,10 @@ import React from "react";
 
 import { useContext } from "react";
 import DataContext from "@/context/context";
-import Products from "../pageComponents/product";
+import Products from "../../pageComponents/product";
 import { MdArrowDropDown } from "react-icons/md";
 import SideBar from "./sideBar";
+import Pagination from "@/pageComponents/pagination";
 
 export default function Home() {
   const { products, sortView, setSortView, handleSort } =
@@ -72,6 +73,7 @@ export default function Home() {
               );
             })}
           </div>
+          <Pagination />
         </div>
       </div>
     </div>

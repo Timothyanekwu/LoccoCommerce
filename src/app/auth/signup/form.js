@@ -29,7 +29,7 @@ const Form = () => {
     );
 
     if (success) {
-      router.push("/");
+      router.push("/marketplace");
     }
   };
 

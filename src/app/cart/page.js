@@ -47,7 +47,7 @@ const Page = () => {
         <div className="lg:h-fit flex lg:flex-col lg:justify-normal justify-between items-center lg:items-start text-lg lg:border-b-0 border-b py-3 lg:px-3 border-[#545454] lg:flex-grow">
           <div
             onClick={() => {
-              router.push("/");
+              router.push("/marketplace");
             }}
             className="rounded-lg bg-[#4D4875] h-fit py-2 px-3 flex items-center lg:mb-3 lg:hidden cursor-pointer"
           >
@@ -85,7 +85,7 @@ const Page = () => {
           {deviceWidth >= 1024 && (
             <div
               onClick={() => {
-                router.push("/");
+                router.push("/marketplace");
               }}
               className="rounded-lg bg-[#4D4875] w-40 h-fit py-2 px-3 flex items-center cursor-pointer hover:bg-[#3b3758] lg:mb-3"
             >

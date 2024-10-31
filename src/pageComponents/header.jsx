@@ -38,11 +38,13 @@ const Head = () => {
   ];
 
   const toOrders = () => {
+    setAccView(false);
     router.push("/orders");
   };
 
   const handleLogout = () => {
     logout();
+    setAccView(false);
     router.push("/auth/login");
   };
   return (

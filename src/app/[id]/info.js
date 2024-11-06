@@ -58,7 +58,7 @@ const Info = ({ name, price, addCart, deviceWidth, qty, setCurrProduct }) => {
             <FaHeart className="w-6 h-6 mx-2" />
           </div>
         </div>
-        {deviceWidth > 1024 && (
+        {deviceWidth >= 1024 && (
           <section className="w-full flex justify-center items-center bg-white pb-2">
             <div
               onClick={addCart}

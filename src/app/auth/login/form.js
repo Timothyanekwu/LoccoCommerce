@@ -25,9 +25,7 @@ const LoginForm = () => {
   return (
     <div className="px-6 lg:px-10 py-28 flex-grow">
       <div className="flex w-full justify-between items-baseline pr-3">
-        <p className="text-3xl font-semibold w-full text-center lg:text-start">
-          Login
-        </p>
+        <p className="text-3xl font-semibold w-full text-start">Login</p>
         <p
           onClick={() => router.push("/auth/signup")}
           className="text-[#4D4875] underline underline-offset-2 cursor-pointer"
@@ -62,6 +60,9 @@ const LoginForm = () => {
           >
             Submit
           </button>
+          <div className="flex justify-end mt-2">
+            <p className="text-[#4D4875]">Forgot password?</p>
+          </div>
           {error && (
             <div className="w-full h-10 text-sm text-red-600 mt-3 border border-red-600 bg-red-100 flex items-center justify-center">
               {error}

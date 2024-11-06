@@ -21,6 +21,7 @@ export const Data = ({ children }) => {
   const [noteView, setAddView] = useState(false);
   const [locatView, setLocatView] = useState(false);
   const [accView, setAccView] = useState(false);
+  const [sidebarView, setSidebarView] = useState(false);
 
   // marketplace states
   const [search, setSearch] = useState("");
@@ -63,12 +64,16 @@ export const Data = ({ children }) => {
   const { user } = useAuthContext();
   const pathname = usePathname();
 
+  // ------------------------- LOADING STATES -------------------------------
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+  const [isLoadingProd, setIsLoadingProd] = useState(true);
+
   // ------------------------- USE-EFFECT HOOK ------------------------------
 
   useEffect(() => {
     const localUser = localStorage.getItem("user");
     if (!pathname.includes("auth") && !localUser) {
-      router.push("/auth/signup");
+      router.push("/auth/login");
     }
     if (pathname.includes("auth") && localUser) {
       router.push("/marketplace");
@@ -76,14 +81,9 @@ export const Data = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const handleResize = () => {
-      setDeviceWidth(window.innerWidth);
-    };
+    const handleResize = () => setDeviceWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
@@ -123,8 +123,11 @@ export const Data = ({ children }) => {
           setLocations(locationsResponse.data);
           setOrders(ordersResponse.data);
           setProfile(profileResponse.data);
-
           setPages(pageGutter(productsResponse.data.totalPages, 1));
+
+          // after this
+          setIsLoadingProducts(false);
+          setIsLoadingProd(false);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -151,6 +154,9 @@ export const Data = ({ children }) => {
     router.push(`/marketplace?${setParams.toString()}`, undefined, {
       shallow: true,
     });
+
+    setIsLoadingProducts(true);
+    setSidebarView(false);
   };
 
   // price filter handler
@@ -162,6 +168,8 @@ export const Data = ({ children }) => {
       shallow: true,
     });
     setSelectedOption(msg);
+    setIsLoadingProducts(true);
+    setSidebarView(false);
   };
 
   // discounts filter handler
@@ -173,6 +181,8 @@ export const Data = ({ children }) => {
       shallow: true,
     });
     setDiscOption(item);
+    setIsLoadingProducts(true);
+    setSidebarView(false);
   };
 
   const clearFilter = () => {
@@ -184,6 +194,8 @@ export const Data = ({ children }) => {
     });
 
     setSelectedOption(false);
+    setIsLoadingProducts(true);
+    setSidebarView(false);
   };
 
   // product search handler
@@ -196,6 +208,8 @@ export const Data = ({ children }) => {
     router.push(`/marketplace?${setParams.toString()}`, undefined, {
       shallow: true,
     });
+
+    setIsLoadingProducts(true);
   };
 
   // product sort handler
@@ -208,6 +222,7 @@ export const Data = ({ children }) => {
     });
 
     setSortView(false);
+    setIsLoadingProducts(true);
   };
 
   // product add to cart
@@ -503,6 +518,11 @@ export const Data = ({ children }) => {
         pages,
         setPages,
         handlePage,
+        isLoadingProducts,
+        isLoadingProd,
+        setDeviceWidth,
+        sidebarView,
+        setSidebarView,
       }}
     >
       {children}

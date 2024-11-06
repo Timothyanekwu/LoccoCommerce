@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useContext } from "react";
-
+import { GiCancel } from "react-icons/gi";
 import DataContext from "@/context/context";
 
 const SideBar = () => {
@@ -14,6 +14,8 @@ const SideBar = () => {
     discOption,
     handleDisc,
     clearFilter,
+    sidebarView,
+    setSidebarView,
   } = useContext(DataContext);
 
   const categories = [
@@ -51,18 +53,34 @@ const SideBar = () => {
   ];
 
   const discount = [
-    "Free Delivery",
-    "25% discount or more",
-    "40% discount or more",
-    "50% discount or more",
+    {
+      msg: "25% discount or more",
+      value: 25,
+    },
+    {
+      msg: "40% discount or more",
+      value: 40,
+    },
+    {
+      msg: "50% discount or more",
+      value: 50,
+    },
   ];
 
   return (
-    <div className="h-fit w-60 bg-white border-x-2 sideBar py-5">
+    <div
+      className={`w-[65%] md:w-[40%] lg:w-60 bg-white border-x-2 sideBar py-5 ${
+        sidebarView ? "fixed block" : "hidden"
+      } lg:block`}
+    >
       {/* Categories */}
       <div className="border-b">
-        <div className="h-8 w-full px-3 flex items-center">
+        <div className="h-8 w-full px-3 flex items-center justify-between">
           <p>CATEGORIES</p>
+          <GiCancel
+            onClick={() => setSidebarView(false)}
+            className="block text-lg lg:hidden"
+          />
         </div>
         <div>
           {categories.map((item, index) => (
@@ -124,12 +142,12 @@ const SideBar = () => {
               <input
                 type="radio"
                 name="discOptions"
-                value={item}
+                value={item.value}
                 id={`priceOption${index}`}
                 checked={discOption === item}
-                onChange={() => handleDisc(item)} // Handle price change
+                onChange={() => handleDisc(item.value)} // Handle price change
               />
-              <p className="text-sm ml-2">{item}</p>
+              <p className="text-xs ml-2">{item.msg}</p>
             </label>
           ))}
         </div>

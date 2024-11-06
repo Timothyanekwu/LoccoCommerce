@@ -11,6 +11,7 @@ import Features from "./features";
 import Specifications from "./specifications";
 import Locations from "./locations";
 import { useRouter } from "next/navigation";
+import ProductPageLoad from "@/loadingComponent/productPageLoad";
 
 const Page = () => {
   const [imgIndex, setImgIndex] = useState(0);
@@ -25,6 +26,7 @@ const Page = () => {
     setSelectState,
     localGovt,
     setLocalGovt,
+    isLoadingProd,
   } = useContext(DataContext);
   const { id } = useParams(); // Fetch the id from the URL
 
@@ -38,6 +40,8 @@ const Page = () => {
       }
     }
   }, [products, id]);
+
+  if (isLoadingProd) return <ProductPageLoad />;
 
   return (
     <>
@@ -95,7 +99,7 @@ const Page = () => {
           <Description description={currProduct.description} />
           <Features description={currProduct.description} />
           <Specifications description={currProduct.description} />
-          {deviceWidth <= 1024 && (
+          {deviceWidth < 1024 && (
             <section className="w-full flex justify-center items-center bg-white mt-3 pb-2 sticky right-0 left-0 bottom-0">
               <div
                 onClick={addCart}

@@ -7,6 +7,15 @@ module.exports = {
   ],
   theme: {
     extend: {
+      keyframes: {
+        colorChange: {
+          "0%, 100%": { backgroundColor: "#E9E9E9" },
+          "50%": { backgroundColor: "#F5F5F5" },
+        },
+      },
+      animation: {
+        colorChange: "colorChange 2s ease-in-out infinite",
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",

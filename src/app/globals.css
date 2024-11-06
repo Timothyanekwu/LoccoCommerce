@@ -81,21 +81,17 @@ body {
   }
 
   .sideBar {
-    @apply hidden;
+    @apply top-0 h-screen overflow-y-auto z-20 left-0 custom-scrollbar;
+  }
+
+  .sideBarMenu {
+    @apply block;
   }
 }
 
 @media (min-width: 426px) {
-  .inputBd {
-    @apply hidden;
-  }
-
   .productFont {
     @apply text-sm;
-  }
-
-  .inputHd {
-    @apply block w-[45vw];
   }
 }
 
@@ -110,6 +106,14 @@ body {
 
   .cartPadding {
     @apply px-7;
+  }
+
+  .inputHd {
+    @apply block w-[45vw];
+  }
+
+  .inputBd {
+    @apply hidden;
   }
 }
 
@@ -129,20 +133,26 @@ body {
 
 @media (min-width: 769px) {
   .sideBar {
-    @apply block;
+    @apply static overflow-y-visible z-0 h-fit;
   }
 
   .prodContainer {
     @apply px-8 flex justify-between w-full;
   }
 
-  .headerPadding {
+  /* .headerPadding {
     @apply px-8;
-  }
+  } */
 }
 
 @media (min-width: 1000px) {
   .productGrid {
     @apply grid-cols-4 px-8 gap-4;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sideBarMenu {
+    @apply hidden;
   }
 }

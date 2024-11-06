@@ -5,7 +5,7 @@ import Image from "next/image";
 import { CiStar } from "react-icons/ci";
 import { useRouter } from "next/navigation";
 
-const Products = ({ name, img, price, id }) => {
+const Products = ({ name, img, price, id, discountPrice }) => {
   const router = useRouter();
 
   const handleClick = () => {
@@ -22,6 +22,11 @@ const Products = ({ name, img, price, id }) => {
     >
       <div>
         <div className="w-full h-40 relative mb-2">
+          {discountPrice && (
+            <div className="absolute flex top-1 right-1 px-[3px] bg-green-200 text-green-800 z-10 text-xs rounded-sm border border-green-800">
+              -{Math.round((discountPrice / price) * 100)}%
+            </div>
+          )}
           <Image
             src={img}
             alt={name}
@@ -48,7 +53,14 @@ const Products = ({ name, img, price, id }) => {
         </div> */}
 
           <div className="mt-3">
-            <p className="text-xl">N {price}</p>
+            {discountPrice ? (
+              <div className="flex items-baseline">
+                <p className="text-xl">N{discountPrice}</p>
+                <p className="line-through opacity-50 ml-1">N{price}</p>
+              </div>
+            ) : (
+              <p className="text-xl">N{price}</p>
+            )}
           </div>
           <p className="text-xs">234 sold in the last month</p>
         </div>

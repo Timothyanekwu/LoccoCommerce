@@ -49,7 +49,7 @@ const Head = () => {
   };
   return (
     !pathname.includes("auth") && (
-      <div className="bg-white w-full shadow-md pb-2 sticky top-0 z-20 headerPadding">
+      <div className="bg-white shadow-md pb-2 sticky w-auto top-0 z-20 headerPadding">
         <div className="px-3 pt-4">
           <div className="flex w-full justify-between items-center mb-2">
             <div className="flex items-center">

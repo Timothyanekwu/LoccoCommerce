@@ -8,19 +8,34 @@ import Products from "../../pageComponents/product";
 import { MdArrowDropDown } from "react-icons/md";
 import SideBar from "./sideBar";
 import Pagination from "@/pageComponents/pagination";
+import ProductLoading from "@/loadingComponent/productLoad";
+import NoItem from "../../../public/noItem";
+import { IoMenu } from "react-icons/io5";
 
 export default function Home() {
-  const { products, sortView, setSortView, handleSort } =
-    useContext(DataContext);
+  const {
+    products,
+    sortView,
+    setSortView,
+    handleSort,
+    isLoadingProducts,
+    setSidebarView,
+  } = useContext(DataContext);
 
   return (
     <div className="pt-14">
-      <div className="prodContainer">
+      <div className="w-full prodContainer">
         <SideBar />
         <div className="w-full">
-          <div className="w-full px-5 mx-3 mb-5 flex justify-between h-16 items-center border-y">
-            <div>
-              <p className="font-[500] text-2xl">Shop quality products</p>
+          <div className="px-3 lg:px-5 mx-3 mb-5 flex justify-between h-16 items-center border-y">
+            <div className="flex items-center">
+              <IoMenu
+                onClick={() => setSidebarView(true)}
+                className="mr-2 text-2xl sideBarMenu"
+              />
+              <p className="font-[500] text-xl md:text-2xl">
+                Shop quality products
+              </p>
             </div>
             <div className="relative">
               <div
@@ -60,19 +75,36 @@ export default function Home() {
               ) : null}
             </div>
           </div>
-          <div className="productGrid">
-            {products.map((item, index) => {
-              return (
-                <Products
-                  name={item.name}
-                  img={item.img[0]}
-                  price={item.price}
-                  id={item._id}
-                  key={index}
-                />
-              );
-            })}
-          </div>
+
+          {isLoadingProducts ? (
+            <div className="productGrid">
+              <ProductLoading />
+              <ProductLoading />
+              <ProductLoading />
+              <ProductLoading />
+            </div>
+          ) : products.length !== 0 ? (
+            <div className="productGrid">
+              {products.map((item, index) => {
+                return (
+                  <Products
+                    name={item.name}
+                    img={item.img[0]}
+                    price={item.price}
+                    id={item._id}
+                    discountPrice={item.discountPrice}
+                    key={index}
+                  />
+                );
+              })}
+            </div>
+          ) : (
+            <div className="flex items-center flex-col">
+              <NoItem width={350} height={350} />
+              <p className="text-3xl text-neutral-300">No product found</p>
+            </div>
+          )}
+
           <Pagination />
         </div>
       </div>

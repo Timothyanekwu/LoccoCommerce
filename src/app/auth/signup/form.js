@@ -34,9 +34,9 @@ const Form = () => {
   };
 
   return (
-    <div className="px-6 lg:px-10 py-14 flex-grow">
+    <div className="px-6 sm:px-20 md:px-40 lg:px-10 py-14 flex-grow">
       <div className="flex w-full justify-between items-baseline pr-3">
-        <p className="text-3xl font-semibold w-full text-center lg:text-start">
+        <p className="text-3xl font-semibold w-full text-start">
           Create an account
         </p>
         <p

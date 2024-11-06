@@ -7,7 +7,8 @@ import { FaLongArrowAltLeft } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
 const Page = () => {
-  const { cart, deviceWidth, cartUpdate, cartDelete } = useContext(DataContext);
+  const { cart, deviceWidth, cartUpdate, cartDelete, setDeviceWidth } =
+    useContext(DataContext);
   const router = useRouter();
   const [loading, setLoading] = useState(true); // Initialize loading state
 
@@ -15,9 +16,7 @@ const Page = () => {
     const fetchCartData = async () => {
       try {
         setLoading(true);
-        const handleResize = () => {
-          setDeviceWidth(window.innerWidth);
-        };
+        const handleResize = () => setDeviceWidth(window.innerWidth);
 
         window.addEventListener("resize", handleResize);
         return () => {

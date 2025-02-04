@@ -98,21 +98,26 @@ export const Data = ({ children }) => {
             profileResponse,
           ] = await Promise.all([
             axios.get(
-              `http://localhost:5500/products?${searchParams.toString()}`,
+              `${
+                process.env.NEXT_PUBLIC_BASE_URL
+              }/products?${searchParams.toString()}`,
               {
                 headers: { Authorization: `Bearer ${user.token}` },
               }
             ),
-            axios.get(`http://localhost:5500/products/cartData`, {
+            axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/products/cartData`, {
               headers: { Authorization: `Bearer ${user.token}` },
             }),
-            axios.get(`http://localhost:5500/products/locations`, {
+            axios.get(
+              `${process.env.NEXT_PUBLIC_BASE_URL}/products/locations`,
+              {
+                headers: { Authorization: `Bearer ${user.token}` },
+              }
+            ),
+            axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/products/orders`, {
               headers: { Authorization: `Bearer ${user.token}` },
             }),
-            axios.get(`http://localhost:5500/products/orders`, {
-              headers: { Authorization: `Bearer ${user.token}` },
-            }),
-            axios.get(`http://localhost:5500/products/profile`, {
+            axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/products/profile`, {
               headers: { Authorization: `Bearer ${user.token}` },
             }),
           ]);
@@ -231,7 +236,7 @@ export const Data = ({ children }) => {
 
     if (!item) {
       const response = await axios.post(
-        "http://localhost:5500/products/cartData",
+        `${process.env.NEXT_PUBLIC_BASE_URL}/products/cartData`,
         {
           name: currProduct.name,
           img: currProduct.img[0],
@@ -251,7 +256,7 @@ export const Data = ({ children }) => {
       alert("Product added to cart successfully!!!");
     } else {
       const response = await axios.patch(
-        `http://localhost:5500/products/cartData/${item._id}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/products/cartData/${item._id}`,
         {
           price: currProduct.price * (item.qty + currProduct.qty),
           qty: item.qty + currProduct.qty,
@@ -289,7 +294,7 @@ export const Data = ({ children }) => {
       callTimeout.current = setTimeout(async () => {
         try {
           await axios.patch(
-            `http://localhost:5500/products/cartData/${id}`,
+            `${process.env.NEXT_PUBLIC_BASE_URL}/products/cartData/${id}`,
             {
               qty: qty,
               price: price,
@@ -348,11 +353,14 @@ export const Data = ({ children }) => {
 
   // delete from cart
   const cartDelete = async (id) => {
-    await axios.delete(`http://localhost:5500/products/cartData/${id}`, {
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-      },
-    });
+    await axios.delete(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/products/cartData/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+    );
 
     setCart((prev) => prev.filter((item) => item._id !== id));
   };
@@ -392,7 +400,7 @@ export const Data = ({ children }) => {
   // customer location submit
   const locationSubmit = async () => {
     const response = await axios.post(
-      "http://localhost:5500/products/locations",
+      `${process.env.NEXT_PUBLIC_BASE_URL}/products/locations`,
       {
         name: locat.name,
         surname: locat.surname,
@@ -427,7 +435,7 @@ export const Data = ({ children }) => {
     const location = locations.find((location) => location._id === locationId);
 
     const res = await axios.post(
-      "http://localhost:5500/products/orders",
+      `${process.env.NEXT_PUBLIC_BASE_URL}/products/orders`,
       {
         customerFullName: `${location.name} ${location.surname}`,
         customerPhone: location.phoneNo,
@@ -444,9 +452,12 @@ export const Data = ({ children }) => {
       }
     );
 
-    await axios.delete(`http://localhost:5500/products/clearCart`, {
-      headers: { Authorization: `Bearer ${user.token}` },
-    });
+    await axios.delete(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/products/clearCart`,
+      {
+        headers: { Authorization: `Bearer ${user.token}` },
+      }
+    );
 
     alert("Order placed successfully!!!");
 

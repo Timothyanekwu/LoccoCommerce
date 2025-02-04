@@ -2,7 +2,7 @@ import { Data } from "@/context/context";
 import { Ubuntu } from "next/font/google";
 import Head from "../pageComponents/header";
 import Footer from "../pageComponents/footer";
-// import { AuthContextProvider } from "@/context/userContext";
+import { AuthContextProvider } from "@/context/userContext";
 import "./globals.css";
 import { Suspense } from "react";
 
@@ -22,11 +22,13 @@ export default function RootLayout({ children }) {
       <head></head>
       <body className={`${ubuntu.className} antialiased`}>
         <Suspense fallback={<div>Loading...</div>}>
-          <Data>
-            <Head />
-            <div className="min-h-screen">{children}</div>
-            <Footer />
-          </Data>
+          <AuthContextProvider>
+            <Data>
+              <Head />
+              <div className="min-h-screen">{children}</div>
+              <Footer />
+            </Data>
+          </AuthContextProvider>
         </Suspense>
       </body>
     </html>

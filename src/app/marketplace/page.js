@@ -76,15 +76,16 @@ export default function Home() {
             </div>
           </div>
 
-          {isLoadingProducts ? (
-            <div className="productGrid">
-              <ProductLoading />
-              <ProductLoading />
-              <ProductLoading />
-              <ProductLoading />
-            </div>
-          ) : products.length !== 0 ? (
-            <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<div>Loading...</div>}>
+            {" "}
+            {isLoadingProducts ? (
+              <div className="productGrid">
+                <ProductLoading />
+                <ProductLoading />
+                <ProductLoading />
+                <ProductLoading />
+              </div>
+            ) : products.length !== 0 ? (
               <div className="productGrid">
                 {products.map((item, index) => {
                   return (
@@ -99,13 +100,13 @@ export default function Home() {
                   );
                 })}
               </div>
-            </Suspense>
-          ) : (
-            <div className="flex items-center flex-col">
-              <NoItem width={350} height={350} />
-              <p className="text-3xl text-neutral-300">No product found</p>
-            </div>
-          )}
+            ) : (
+              <div className="flex items-center flex-col">
+                <NoItem width={350} height={350} />
+                <p className="text-3xl text-neutral-300">No product found</p>
+              </div>
+            )}{" "}
+          </Suspense>
 
           <Pagination />
         </div>

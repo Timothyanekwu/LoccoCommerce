@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 
 import { useContext } from "react";
 import DataContext from "@/context/context";
@@ -84,20 +84,22 @@ export default function Home() {
               <ProductLoading />
             </div>
           ) : products.length !== 0 ? (
-            <div className="productGrid">
-              {products.map((item, index) => {
-                return (
-                  <Products
-                    name={item.name}
-                    img={item.img[0]}
-                    price={item.price}
-                    id={item._id}
-                    discountPrice={item.discountPrice}
-                    key={index}
-                  />
-                );
-              })}
-            </div>
+            <Suspense fallback={<div>Loading...</div>}>
+              <div className="productGrid">
+                {products.map((item, index) => {
+                  return (
+                    <Products
+                      name={item.name}
+                      img={item.img[0]}
+                      price={item.price}
+                      id={item._id}
+                      discountPrice={item.discountPrice}
+                      key={index}
+                    />
+                  );
+                })}
+              </div>
+            </Suspense>
           ) : (
             <div className="flex items-center flex-col">
               <NoItem width={350} height={350} />

@@ -4,6 +4,7 @@ import Head from "../pageComponents/header";
 import Footer from "../pageComponents/footer";
 import { AuthContextProvider } from "@/context/userContext";
 import "./globals.css";
+import { Suspense } from "react";
 
 const ubuntu = Ubuntu({
   subsets: ["latin"],
@@ -23,7 +24,10 @@ export default function RootLayout({ children }) {
         <AuthContextProvider>
           <Data>
             <Head />
-            <div className="min-h-screen">{children}</div>
+            <Suspense fallback={<div>Loading...</div>}>
+              <div className="min-h-screen">{children}</div>
+            </Suspense>
+
             <Footer />
           </Data>
         </AuthContextProvider>

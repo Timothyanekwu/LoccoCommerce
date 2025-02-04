@@ -76,37 +76,37 @@ export default function Home() {
             </div>
           </div>
 
-          <Suspense fallback={<div>Loading...</div>}>
-            {" "}
-            {isLoadingProducts ? (
-              <div className="productGrid">
-                <ProductLoading />
-                <ProductLoading />
-                <ProductLoading />
-                <ProductLoading />
-              </div>
-            ) : products.length !== 0 ? (
-              <div className="productGrid">
-                {products.map((item, index) => {
-                  return (
-                    <Products
-                      name={item.name}
-                      img={item.img[0]}
-                      price={item.price}
-                      id={item._id}
-                      discountPrice={item.discountPrice}
-                      key={index}
-                    />
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="flex items-center flex-col">
-                <NoItem width={350} height={350} />
-                <p className="text-3xl text-neutral-300">No product found</p>
-              </div>
-            )}{" "}
-          </Suspense>
+          {/* <Suspense fallback={<div>Loading...</div>}> */}
+
+          {isLoadingProducts ? (
+            <div className="productGrid">
+              <ProductLoading />
+              <ProductLoading />
+              <ProductLoading />
+              <ProductLoading />
+            </div>
+          ) : products.length !== 0 ? (
+            <div className="productGrid">
+              {products.map((item, index) => {
+                return (
+                  <Products
+                    name={item.name}
+                    img={item.img[0]}
+                    price={item.price}
+                    id={item._id}
+                    discountPrice={item.discountPrice}
+                    key={index}
+                  />
+                );
+              })}
+            </div>
+          ) : (
+            <div className="flex items-center flex-col">
+              <NoItem width={350} height={350} />
+              <p className="text-3xl text-neutral-300">No product found</p>
+            </div>
+          )}
+          {/* </Suspense> */}
 
           <Pagination />
         </div>
